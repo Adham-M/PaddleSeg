@@ -165,11 +165,9 @@ class Predictor:
                 result = result.squeeze(1)
             alpha = np.transpose(result, [1, 2, 0])
 
-        # background replace
-        h, w, _ = img.shape
-        bg = cv2.resize(bg, (w, h))
-        if bg.ndim == 2:
-            bg = bg[..., np.newaxis]
+        mask = alpha * 255
+        img = cv2.cvtColor(img, cv2.COLOR_RGB2RGBA)
+        img[:,:,-1] = mask[:,:,-1]
 
-        comb = (alpha * img + (1 - alpha) * bg).astype(np.uint8)
-        return (alpha * 255)
+        return img
+
