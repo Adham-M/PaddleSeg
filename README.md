@@ -1,4 +1,4 @@
-English | [简体中文](README_cn.md)
+English
 
 # PP-HumanSeg
 
@@ -112,13 +112,6 @@ cd PaddleSeg/contrib/PP-HumanSeg
 Execute the following script to quickly download all Inference Models
 ```bash
 python export_model/download_export_model.py
-```
-
-### Download test data
-We provide some test data, randomly select a small part from the human segmentation dataset [Supervise.ly Person](https://app.supervise.ly/ecosystem/projects/persons) and convert it into a PaddleSeg data format that can be directly loaded , hereinafter referred to as mini_supervisely, and also provides the test video `video_test.mp4` of the front camera of the mobile phone. Quick download by running the following code:
-
-```bash
-python data/download_data.py
 ```
 
 ### Video streaming human segmentation
