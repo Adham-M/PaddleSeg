@@ -172,4 +172,4 @@ class Predictor:
             bg = bg[..., np.newaxis]
 
         comb = (alpha * img + (1 - alpha) * bg).astype(np.uint8)
-        return comb
+        return (alpha * 255)
