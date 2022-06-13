@@ -98,13 +98,13 @@ pip install paddleseg
 #### 3. Download PaddleSeg repository
 
 ```shell
-git clone https://github.com/PaddlePaddle/PaddleSeg
+git clone https://github.com/Adham-M/HumanSeg
 ```
 
 ## Quick experience
 All the following commands are executed in the `PaddleSeg/contrib/PP-HumanSeg` directory.
 ```shell
-cd PaddleSeg/contrib/PP-HumanSeg
+cd HumanSeg
 ```
 
 ### Download Inference Model
