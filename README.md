@@ -102,7 +102,7 @@ git clone https://github.com/Adham-M/HumanSeg
 ```
 
 ## Quick experience
-All the following commands are executed in the `PaddleSeg/contrib/PP-HumanSeg` directory.
+All the following commands are executed in the `HumanSeg` directory.
 ```shell
 cd HumanSeg
 ```
