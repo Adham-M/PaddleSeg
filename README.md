@@ -1,374 +1,289 @@
-English | [简体中文](README_CN.md)
+English | [简体中文](README_cn.md)
 
-<div align="center">
+# PP-HumanSeg
+
+Human segmentation is a high-frequency application in the field of image segmentation. PaddleSeg has launched a series of human segmentation models PP-HumanSeg trained on large-scale human data, including an ultra-lightweight model **PP-HumanSeg-Lite**. It can meet the needs of various usage scenarios on server, mobile, and web. We provide full-process application guides from training to deployment, as well as video streaming segmentation and background replacement tutorials. Based on Paddle.js, you can experience the effects of [Portrait Snapshot](https://paddlejs.baidu.com/humanseg), [Video Background Replacement and Barrage Penetration](https://www.paddlepaddle.org.cn/paddlejs).
 
 <p align="center">
-  <img src="./docs/images/paddleseg_logo.png" align="middle" width = "500" />
+<img src="https://user-images.githubusercontent.com/30695251/149886667-f47cab88-e81a-4fd7-9f32-fbb34a5ed7ce.png"  height="300">        <img src="https://user-images.githubusercontent.com/30695251/149887482-d1fcd5d3-2cce-41b5-819b-bfc7126b7db4.png"  height="300">
 </p>
 
-**A High-Efficient Development Toolkit for Image Segmentation based on [PaddlePaddle](https://github.com/paddlepaddle/paddle).**
+The COVID-19 epidemic has catalyzed the demand for remote office, and video conferencing products have exploded rapidly. Baidu Video Conference can realize one-second joining on the web side. The virtual background function adopts our PP-HumanSeg-Lite model to realize real-time background replacement and background blur function, protect user privacy, and increase the fun in the meeting.
 
-[![Build Status](https://travis-ci.org/PaddlePaddle/PaddleSeg.svg?branch=release/2.1)](https://travis-ci.org/PaddlePaddle/PaddleSeg)
-[![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/github/release/PaddlePaddle/PaddleSeg.svg)](https://github.com/PaddlePaddle/PaddleSeg/releases)
-![python version](https://img.shields.io/badge/python-3.6+-orange.svg)
-![support os](https://img.shields.io/badge/os-linux%2C%20win%2C%20mac-yellow.svg)
+<p align="center">
+<img src="https://github.com/LutaoChu/transfer_station/raw/master/conference.gif" width="60%" height="60%">
+</p>
 
-</div>
+## Updates
+- [2022-1-4] Human segmentation paper [PP-HumanSeg](./paper.md) was published in WACV 2022 Workshop, and open-sourced Connectivity Learning (SCL) method and large-scale video conferencing dataset.
 
+## Content
+- [Human segmentation model](#Human-segmentation-model)
+  - [General human segmentation](#General-Human-Segmentation)
+  - [Portrait segmentation](#Portrait-segmentation)
+- [Install](#install)
+- [Quick experience](#Quick-experience)
+  - [Video streaming human segmentation](#Video-streaming-human-segmentation)
+  - [Video stream background replacement](#Video-stream-background-replacement)
+  - [Online running tutorial](#Online-running-tutorial)
+- [Training evaluation prediction demo](#Training-evaluation-prediction-demo)
+- [Model export](#Model-export)
+- [Web deployment](#Web-deployment)
+- [Mobile deployment](#mobile-deployment)
 
+## Human segmentation model
+### General human segmentation
+For general human segmentation tasks, PP-HumanSeg has opened three human models trained on large-scale human data to meet the needs of various usage scenarios on the server, mobile and web.
 
-## News <img src="./docs/images/seg_news_icon.png" width="40"/>
-<ul class="nobull">
-  <li>[2022-04-20] :fire: PaddleSeg v2.5 is released! More details in <a href="https://github.com/PaddlePaddle/PaddleSeg/releases">Release Notes</a>.</li>
-    <ul>
-        <li>Release <a href="./configs/pp_liteseg">PP-LiteSeg</a>, a real-time semantic segmentation model. It achieves SOTA trade-off between segmentation accuracy and inference speed. [<a href="https://arxiv.org/pdf/2204.02681.pdf">techical report</a>]</li>
-        <li>Release <a href="./Matting">PP-Matting</a>, a trimap-free image matting model for extremely fine-grained segmentation. It achieves SOTA performance on Composition-1k and Distinctions-646. [<a href="https://arxiv.org/abs/2204.09433">techical report</a>]</li>
-        <li>Release <a href="./contrib/MedicalSeg">MedicalSeg</a>, a newly easy-to-use toolkit for 3D medical image segmentation. It supports the whole process including data preprocessing, model training, and model deployment, and provides the high-accuracy models on lung and spine segmentation.
-        <li>Upgrade the interactive annotation tool <a href="./EISeg">EISeg v0.5</a> with supporting new areas in chest X-Ray, MRI spine, and defect inspection.</li>
-        <li>Add 5 semantic segmentatioin models, including variants of PP-LiteSeg.</li>
-    </ul>
- <li>[2022-01-20] We release PaddleSeg v2.4 with EISeg v0.4, and <a href="./contrib/PP-HumanSeg">PP-HumanSeg</a> including open-sourced dataset <a href="./contrib/PP-HumanSeg/paper.md#pp-humanseg14k-a-large-scale-teleconferencing-video-dataset">PP-HumanSeg14K</a>. </li>
- <li>[2021-10-11] We released PaddleSeg v2.3 with the improved interactive segmentation tool EISeg v0.3, two matting algorithms, and segmentation model compression.</li>
-
-</ul>
-
-
-## Introduction
-
-PaddleSeg is an end-to-end high-efficent development toolkit for image segmentation based on PaddlePaddle, which  helps both developers and researchers in the whole process of designing segmentation models, training models, optimizing performance and inference speed, and deploying models. A lot of well-trained models and various real-world applications in both industry and academia help users conveniently build hands-on experiences in image segmentation.
-
-* #### Four segmentation areas: semantic segmentation, interactive segmentation, panoptic segmentation and image matting.
-
-<div align="center">
-<img src="https://user-images.githubusercontent.com/53808988/130562378-64d0c84a-9c3f-4ae4-93f7-bdc0c8e0238e.gif"  width = "2000" />  
-</div>
+| Model | Model Description | Checkpoint | Inference Model |
+| --- | --- | --- | ---|
+| PP-HumanSeg-Server | High-precision model, suitable for server-side GPU and complex background scenes, model structure is Deeplabv3+/ResNet50, input size (512, 512) |[server_ckpt](https://paddleseg.bj.bcebos.com/dygraph/humanseg/train/deeplabv3p_resnet50_os8_humanseg_512x512_100k.zip) | [server_inference](https://paddleseg.bj.bcebos.com/dygraph/humanseg/export/deeplabv3p_resnet50_os8_humanseg_512x512_100k_with_softmax.zip) |
+| PP-HumanSeg-Mobile | Lightweight model, suitable for front camera scenarios on mobile or server CPU, model structure is HRNet_w18_samll_v1, input size (192, 192) | [mobile_ckpt](https://paddleseg.bj.bcebos.com/dygraph/humanseg/train/fcn_hrnetw18_small_v1_humanseg_192x192.zip) | [mobile_inference](https://paddleseg.bj.bcebos.com/dygraph/humanseg/export/fcn_hrnetw18_small_v1_humanseg_192x192_with_softmax.zip) |
+| PP-HumanSeg-Lite | Ultra-lightweight model, suitable for real-time segmentation scenarios on the web or mobile, such as mobile phone selfies, web video conferences, the model structure is [Paddle self-developed model](../../configs/pp_humanseg_lite/README.md), input size (192, 192) | [lite_ckpt](https://paddleseg.bj.bcebos.com/dygraph/humanseg/train/pphumanseg_lite_generic_192x192.zip) | [lite_inference](https://paddleseg.bj.bcebos.com/dygraph/humanseg/export/pphumanseg_lite_generic_192x192_with_softmax.zip) |
 
 
----------------
+NOTE:
+* Where Checkpoint is the model weight, which is used in the Fine-tuning scene.
 
- * #### Various applications in autonomous driving, medical segmentation, remote sensing, quality inspection, and other scenarios.
+* Inference Model is a predictive deployment model, including `model.pdmodel` computational graph structure, `model.pdiparams` model parameters and `deploy.yaml` basic model configuration information.
 
-<div align="center">
-<img src="https://user-images.githubusercontent.com/53808988/130562234-bdf79d76-8566-4e06-a3a9-db7719e63385.gif"  width = "2000" />  
-</div>
+* Among them, the Inference Model is suitable for the prediction deployment of CPU and GPU on the server, and is suitable for the deployment of end devices such as mobile terminals through Paddle Lite. For more Paddle Lite deployment instructions, see [Paddle Lite Documentation](https://paddle-lite.readthedocs.io/zh/latest/)
 
+#### Model performance
 
----------------
+| Model | Input Size | FLOPs | Parameters | Latency | Model Size |
+|-|-|-|-|-|-|
+| PP-HumanSeg-Server | 512x512 | 114G | 26.8M | 37.96ms | 103Mb |
+| PP-HumanSeg-Mobile | 192x192 | 584M | 1.54M | 13.17ms | 5.9Mb |
+| PP-HumanSeg-Lite | 192x192 | 121M | 137K | 10.51ms | 543Kb |
 
+Test environment: Nvidia Tesla V100 single card.
 
-## Features
+### Portrait segmentation
+For the portrait segmentation task, PP-HumanSeg has opened a portrait segmentation model, which has been applied to Baidu Video Conferencing.
 
-* <img src="./docs/images/f1.png" width="20"/> **High-Performance Model**: Based on the high-performance backbone trained by semi-supervised label knowledge distillation scheme ([SSLD]((https://paddleclas.readthedocs.io/zh_CN/latest/advanced_tutorials/distillation/distillation.html#ssld))), combined with the state of the art segmentation technology, we provide 80+ high-quality pre-training models, which are better than other open-source implementations.
+| Model | Model Description | Checkpoint | Inference Model |
+| --- | --- | --- | ---|
+| PP-HumanSeg-Lite | Ultra-lightweight model, suitable for real-time segmentation scenarios on the web or mobile, such as mobile phone selfies, web video conferences, the model structure is [Paddle self-developed model](../../configs/pp_humanseg_lite/README.md), recommended input size (398, 224) | [lite_portrait_ckpt](https://paddleseg.bj.bcebos.com/dygraph/ppseg/ppseg_lite_portrait_398x224.tar.gz) | [lite_portrait_inference](https://paddleseg.bj.bcebos.com/dygraph/ppseg/ppseg_lite_portrait_398x224_with_softmax.tar.gz) |
 
-* <img src="./docs/images/f2.png" width="20"/> **Modular Design**: PaddleSeg supports 40+ mainstream *segmentation networks*, developers can start based on actual application scenarios and assemble diversified training configurations combined with modular design of *data enhancement strategies*, *backbone networks*, *loss functions* and other different components to meet different performance and accuracy requirements.
+#### Model performance
 
-* <img src="./docs/images/f3.png" width="20"/> **High Efficiency**: PaddleSeg provides multi-process asynchronous I/O, multi-card parallel training, evaluation, and other acceleration strategies, combined with the memory optimization function of the PaddlePaddle, which can greatly reduce the training overhead of the segmentation model, all this allowing developers to lower cost and more efficiently train image segmentation model.
+| Model | Input Size | FLOPs | Parameters | Latency | Model Size |
+|-|-|-|-|-|-|
+| PP-HumanSeg-Lite | 398x224 | 266M | 137K | 23.49ms | 543Kb |
+| PP-HumanSeg-Lite | 288x162 | 138M | 137K | 15.62ms | 543Kb |
 
-
-
-## Overview <img src="./docs/images/model.png" width="20"/>
-
-<table align="center">
-  <tbody>
-    <tr align="center" valign="bottom">
-      <td>
-        <b>Models</b>
-      </td>
-      <td colspan="2">
-        <b>Components</b>
-      </td>
-      <td>
-        <b>Projects</b>
-      </td>
-    </tr>
-    <tr valign="top">
-      <td>
-            <li>ANN</li>
-            <li>BiSeNetV2</li>
-            <li>DANet</li>
-            <li>DeepLabV3</li>
-            <li>DeepLabV3P</li>
-            <li>Fast-SCNN</li>
-            <li>HRNet-FCN</li>
-            <li>GCNet</li>
-            <li>GSCNN</li>
-            <li>HarDNet</li>
-            <li>OCRNet</li>
-            <li>PSPNet</li>
-            <li>U-Net</li>
-            <li>U<sup>2</sup>-Net</li>
-            <li>Att U-Net</li>
-            <li>U-Net++</li>
-            <li>U-Net3+</li>
-            <li>DecoupledSeg</li>
-            <li>EMANet</li>
-            <li>ISANet</li>
-            <li>DNLNet</li>
-            <li>SFNet</li>
-            <li>PP-HumanSeg</li>
-            <li>PortraitNet</li>
-            <li>STDC</li>
-            <li>GINet</li>
-            <li>PointRend</li>
-            <li>SegNet</li>
-            <li>ESPNetV2</li>
-            <li>HRNet-Contrast</li>
-            <li>DMNet</li>
-            <li>ESPNetV1</li>
-            <li>ENCNet</li>
-            <li>PFPNNet</li>
-            <li>FastFCN</li>
-            <li>BiSeNetV1</li>
-            <li>SETR</li>
-            <li>MLA Transformer</li>
-            <li>SegFormer</li>
-            <li>SegMenter</li>
-            <li>ENet</li>
-            <li>CCNet</li>
-            <li>DDRNet</li>
-            <li>GloRe</li>
-            <li>PP-LiteSeg :star:</li>
-      </td>
-      <td>
-        <b>Backbones</b><br>
-          <ul>
-            <li>HRNet</li>
-            <li>MobileNetV2</li>
-            <li>MobileNetV3</li>
-            <li>ResNet</li>
-            <li>STDCNet</li>
-            <li>XCeption</li>
-            <li>VIT</li>
-            <li>MixVIT</li>
-            <li>Swin Transformer</li>
-          </ul>  
-        <b>Losses</b><br>
-          <ul>
-            <li>Cross Entropy</li>
-            <li>Binary CE</li>
-            <li>Bootstrapped CE</li>
-            <li>Point CE</li>
-            <li>OHEM CE</li>
-            <li>Pixel Contrast CE</li>
-            <li>Focal</li>
-            <li>Dice</li>
-            <li>RMI</li>
-            <li>KL</li>
-            <li>L1</li>
-            <li>Lovasz</li>
-            <li>MSE</li>
-            <li>Edge Attention</li>
-            <li>Relax Boundary</li>
-            <li>Connectivity</li>
-            <li>MultiClassFocal</li>
-          </ul>
-        <b>Metrics</b><br>
-          <ul>
-            <li>mIoU</li>
-            <li>Accuracy</li>
-            <li>Kappa</li>
-            <li>Dice</li>
-            <li>AUC_ROC</li>
-          </ul>  
-      </td>
-      <td>
-        <b>Datasets</b><br>
-          <ul>
-            <li>Cityscapes</li>
-            <li>Pascal VOC</li>
-            <li>ADE20K</li>  
-            <li>Pascal Context</li>  
-            <li>COCO Stuff</li>
-            <li>SUPERVISELY</li>
-            <li>EG1800</li>
-            <li>CHASE_DB1</li>
-            <li>HRF</li>
-            <li>DRIVE</li>
-            <li>STARE</li>
-            <li>PP-HumanSeg14K</li>
-          </ul>
-        <b>Data Augmentation</b><br>
-        <ul>
-          <li>Flipping</li>  
-          <li>Resize</li>  
-          <li>ResizeByLong</li>
-          <li>ResizeByShort</li>
-          <li>LimitLong</li>  
-          <li>ResizeRangeScaling</li>  
-          <li>ResizeStepScaling</li>
-          <li>Normalize</li>
-          <li>Padding</li>
-          <li>PaddingByAspectRatio</li>
-          <li>RandomPaddingCrop</li>  
-          <li>RandomCenterCrop</li>
-          <li>ScalePadding</li>
-          <li>RandomNoise</li>  
-          <li>RandomBlur</li>  
-          <li>RandomRotation</li>  
-          <li>RandomScaleAspect</li>  
-          <li>RandomDistort</li>  
-          <li>RandomAffine</li>  
-        </ul>  
-      </td>
-      <td>
-        <b>Interactive Segmentation</b><br>
-          <ul>
-            <li>EISeg</li>
-            <li>RITM</li>
-            <li>EdgeFlow</li>
-           </ul>
-       <b>Image Matting</b><br>
-        <ul>
-            <li>PP-Matting</li>
-            <li>DIM</li>
-            <li>MODNet</li>
-            <li>PP-HumanMatting</li>
-        </ul>
-        <b>Human Segmentation</b><br>
-        <ul>
-            <li>PP-HumanSeg</li>
-        </ul>
-        <b>3D Medical Segmentation</b><br>
-        <ul>
-          <li>VNet</li>
-        </ul>
-        <b>Cityscapes SOTA</b><br>
-        <ul>
-            <li>HMSA</li>
-        </ul>
-        <b>Panoptic Segmentation</b><br>
-          <ul>
-            <li>Panoptic-DeepLab</li>
-          </ul>
-        <b>CVPR Champion</b><br>
-        <ul>
-            <li>MLA Transformer</li>
-        </ul>
-        <b>Domain Adaption</b><br>
-        <ul>
-            <li>PixMatch</li>
-        </ul>
-      </td>  
-    </tr>
+Test environment: Use Paddle.js converter to optimize the graph structure, deploy on the web side, the GPU is AMD Radeon Pro 5300M 4 GB.
 
 
-</td>
-    </tr>
-  </tbody>
-</table>
+## Install
 
-## Model Zoo
+#### 1. Install PaddlePaddle
 
-The relationship between mIoU and FLOPs of representative architectures and backbones. See [Model Zoo Overview](./docs/model_zoo_overview.md) for more details.
+Version requirements
 
-<div align="center">
-<img src=https://user-images.githubusercontent.com/30695251/140323107-02ce9de4-c8f4-4f18-88b2-59bd0055a70b.png   />  
-</div>
+* PaddlePaddle >= 2.0.2
 
+* Python >= 3.7+
+
+Due to the high computational cost of the image segmentation model, it is recommended to use PaddleSeg under the GPU version of PaddlePaddle. It is recommended to install a CUDA environment above 10.0. Please refer to the [PaddlePaddle official website](https://www.paddlepaddle.org.cn/install/quick?docurl=/documentation/docs/zh/install/pip/linux-pip.html) for the installation tutorial.
 
 
-## Tutorials <img src="./docs/images/teach.png" width="30"/>
+#### 2. Install PaddleSeg package
 
-* [Installation Guide](./docs/install.md)
-* [Quick Start](./docs/whole_process.md)
-
-*  Data Preparation
-   * [Annotated Data Preparation](./docs/data/marker/marker.md)
-   * [Annotation Tutorial](./docs/data/transform/transform.md)
-   * [Custom Dataset](./docs/data/custom/data_prepare.md)
-
-* [Model Training](/docs/train/train.md)
-* [Model Evaluation](./docs/evaluation/evaluate/evaluate.md)
-* [Prediction](./docs/predict/predict.md)
-
-* Model Export
-    * [Export Inference Model](./docs/model_export.md)
-    * [Export ONNX Model](./docs/model_export_onnx.md)
-
-*  Model Deploy
-    * [Paddle Inference (Python)](./docs/deployment/inference/python_inference.md)
-    * [Paddle Inference (C++)](./docs/deployment/inference/cpp_inference.md)
-    * [Paddle Lite](./docs/deployment/lite/lite.md)
-    * [Paddle Serving](./docs/deployment/serving/serving.md)
-    * [Paddle JS](./docs/deployment/web/web.md)
-    * [Benchmark](./docs/deployment/inference/infer_benchmark.md)
-
-*  Model Compression
-    * [Quantization](./docs/slim/quant/quant.md)
-    * [Distillation](./docs/slim/distill/distill.md)
-    * [Prune](./docs/slim/prune/prune.md)
-
-*  Easy API
-    * [API Documention](./docs/apis/README.md)
-    * [API Tutorial](./docs/api_example.md)
-*  Baisc Knowledge
-    * [Data Augmentation](./docs/module/data/data.md)
-    * [Loss Description](./docs/module/loss/losses_en.md)
-*  Advanced Development
-    * [Detailed Configuration File](./docs/design/use/use.md)
-    * [Create Your Own Model](./docs/design/create/add_new_model.md)
-*  Pull Request
-    * [PR Tutorial](./docs/pr/pr/pr.md)
-    * [PR Style](./docs/pr/pr/style_cn.md)
-
-* [Static Graph Version](./docs/static/static.md)
-* [Community](#Community)
-* [FAQ](./docs/faq/faq/faq.md)
-
-## Practical Projects
-  * [Interactive Segmentation](./EISeg)
-  * [Image Matting](./Matting)
-  * [PP-HumanSeg](./contrib/PP-HumanSeg)
-  * [3D Medical Segmentation](./contrib/MedicalSeg)
-  * [Cityscapes SOTA](./contrib/CityscapesSOTA)
-  * [Panoptic Segmentation](./contrib/PanopticDeepLab)
-  * [CVPR Champion Solution](./contrib/AutoNUE)
-  * [Domain Adaptation](./contrib/DomainAdaptation)
-
-
-## Community <img src="./docs/images/chat.png" width="30"/>
-
-* If you have any problem or suggestion on PaddleSeg, please send us issues through [GitHub Issues](https://github.com/PaddlePaddle/PaddleSeg/issues).
-* Welcome to Join PaddleSeg WeChat Group
-<div align="center">
-<img src="https://user-images.githubusercontent.com/48433081/172106398-c2c0c419-09aa-41b9-8bef-bd6acfd87823.png"  width = "200" />  
-</div>
-
-## License
-
-PaddleSeg is released under the [Apache 2.0 license](LICENSE).
-
-## Acknowledgement
-* Thanks [jm12138](https://github.com/jm12138) for contributing U<sup>2</sup>-Net.
-* Thanks [zjhellofss](https://github.com/zjhellofss) (Fu Shenshen) for contributing Attention U-Net, and Dice Loss.
-* Thanks [liuguoyu666](https://github.com/liguoyu666), [geoyee](https://github.com/geoyee) for contributing U-Net++ and U-Net3+.
-* Thanks [yazheng0307](https://github.com/yazheng0307) (LIU Zheng) for contributing quick-start document.
-* Thanks [CuberrChen](https://github.com/CuberrChen) for contributing STDC(rethink BiSeNet), PointRend and DetailAggregateLoss.
-* Thanks [stuartchen1949](https://github.com/stuartchen1949) for contributing SegNet.
-* Thanks [justld](https://github.com/justld) (Lang Du) for contributing DDRNet, CCNet, ESPNetV2, DMNet, ENCNet, HRNet_W48_Contrast, FastFCN, BiSeNetV1, SECrossEntropyLoss and PixelContrastCrossEntropyLoss.
-* Thanks [Herman-Hu-saber](https://github.com/Herman-Hu-saber) (Hu Huiming) for contributing ESPNetV2.
-* Thanks [zhangjin12138](https://github.com/zhangjin12138) for contributing RandomCenterCrop.
-* Thanks [simuler](https://github.com/simuler) for contributing ESPNetV1.
-* Thanks [ETTR123](https://github.com/ETTR123)(Zhang Kai) for contributing ENet, PFPNNet.
-
-## Citation
-If you find our project useful in your research, please consider citing:
-
-```latex
-@misc{liu2021paddleseg,
-      title={PaddleSeg: A High-Efficient Development Toolkit for Image Segmentation},
-      author={Yi Liu and Lutao Chu and Guowei Chen and Zewu Wu and Zeyu Chen and Baohua Lai and Yuying Hao},
-      year={2021},
-      eprint={2101.06175},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV}
-}
-
-@misc{paddleseg2019,
-    title={PaddleSeg, End-to-end image segmentation kit based on PaddlePaddle},
-    author={PaddlePaddle Contributors},
-    howpublished = {\url{https://github.com/PaddlePaddle/PaddleSeg}},
-    year={2019}
-}
+```shell
+pip install paddleseg
 ```
+
+#### 3. Download PaddleSeg repository
+
+```shell
+git clone https://github.com/PaddlePaddle/PaddleSeg
+```
+
+## Quick experience
+All the following commands are executed in the `PaddleSeg/contrib/PP-HumanSeg` directory.
+```shell
+cd PaddleSeg/contrib/PP-HumanSeg
+```
+
+### Download Inference Model
+
+Execute the following script to quickly download all Inference Models
+```bash
+python export_model/download_export_model.py
+```
+
+### Download test data
+We provide some test data, randomly select a small part from the human segmentation dataset [Supervise.ly Person](https://app.supervise.ly/ecosystem/projects/persons) and convert it into a PaddleSeg data format that can be directly loaded , hereinafter referred to as mini_supervisely, and also provides the test video `video_test.mp4` of the front camera of the mobile phone. Quick download by running the following code:
+
+```bash
+python data/download_data.py
+```
+
+### Video streaming human segmentation
+```bash
+# Real-time segmentation processing through computer camera
+python bg_replace.py \
+--config export_model/ppseg_lite_portrait_398x224_with_softmax/deploy.yaml
+
+# Process the portrait video
+python bg_replace.py \
+--config export_model/deeplabv3p_resnet50_os8_humanseg_512x512_100k_with_softmax/deploy.yaml \
+--video_path data/video_test.mp4
+```
+
+The video segmentation results are as follows:
+
+<img src="https://paddleseg.bj.bcebos.com/humanseg/data/video_test.gif" width="20%" height="20%"><img src="https://paddleseg.bj.bcebos.com/humanseg/data/result.gif" width="20%" height="20%">
+
+We also support the use of DIS (Dense Inverse Search-based method) optical flow post-processing algorithm to reduce the problem of video prediction frame flicker by combining optical flow results and segmentation results. Just use `--use_optic_flow` to enable optical flow post-processing, for example
+```bash
+# Add optical flow post-processing
+python bg_replace.py \
+--config export_model/ppseg_lite_portrait_398x224_with_softmax/deploy.yaml \
+--use_optic_flow
+```
+
+### Video stream background replacement
+The background is replaced according to the selected background, which can be a picture or a video.
+```bash
+# Perform real-time background replacement processing through the computer camera. You can pass in the background video through '--background_video_path'
+python bg_replace.py \
+--config export_model/ppseg_lite_portrait_398x224_with_softmax/deploy.yaml \
+--input_shape 224 398 \
+--bg_img_path data/background.jpg
+
+# Perform background replacement processing on portrait video. You can pass in the background video through '--background_video_path'
+python bg_replace.py \
+--config export_model/deeplabv3p_resnet50_os8_humanseg_512x512_100k_with_softmax/deploy.yaml \
+--bg_img_path data/background.jpg \
+--video_path data/video_test.mp4
+
+# background replacement for a single image
+python bg_replace.py \
+--config export_model/ppseg_lite_portrait_398x224_with_softmax/deploy.yaml \
+--input_shape 224 398 \
+--img_path data/human_image.jpg \
+--bg_img_path data/background.jpg
+
+```
+
+
+The result of background replacement is as follows:
+
+<img src="https://paddleseg.bj.bcebos.com/humanseg/data/video_test.gif" width="20%" height="20%"><img src="https://paddleseg.bj.bcebos.com/humanseg/data/bg_replace.gif" width="20%" height="20%">
+
+
+**NOTE**:
+
+The video segmentation processing time will take a few minutes, please be patient.
+
+The Portrait model is suitable for widescreen shooting scenes, and the vertical screen effect will be slightly worse.
+
+### Online running tutorial
+We provide an AI Studio-based [Online Running Tutorial](https://aistudio.baidu.com/aistudio/projectdetail/2189481) to facilitate your practical experience.
+
+## Training evaluation prediction demo
+If the above models pre-trained on large-scale data cannot meet your accuracy requirements, you can perform fine-tuning in your scene based on the above models to better suit your usage scenarios.
+
+### Download pretrained model
+
+Execute the following script to quickly download all checkpoints as pretrained models
+```bash
+python pretrained_model/download_pretrained_model.py
+```
+
+### Train
+Demonstrates how to do fine-tuning based on the above model. We use the extracted mini_supervisely dataset as an example dataset, taking PP-HumanSeg-Mobile as an example, the training command is as follows:
+```bash
+export CUDA_VISIBLE_DEVICES=0 # Set 1 available card
+# Please execute the following command under windows
+# set CUDA_VISIBLE_DEVICES=0
+python train.py \
+--config configs/fcn_hrnetw18_small_v1_humanseg_192x192_mini_supervisely.yml \
+--save_dir saved_model/fcn_hrnetw18_small_v1_humanseg_192x192_mini_supervisely \
+--save_interval 100 --do_eval --use_vdl
+````
+
+More command line help can be viewed by running the following command:
+```bash
+python train.py --help
+```
+
+### Evaluate
+Use the following command to evaluate
+```bash
+python val.py \
+--config configs/fcn_hrnetw18_small_v1_humanseg_192x192_mini_supervisely.yml \
+--model_path saved_model/fcn_hrnetw18_small_v1_humanseg_192x192_mini_supervisely/best_model/model.pdparams
+```
+
+### Predict
+Use the following command to make predictions, the prediction results are saved in the `./output/result/` folder by default.
+```bash
+python predict.py \
+--config configs/fcn_hrnetw18_small_v1_humanseg_192x192_mini_supervisely.yml \
+--model_path saved_model/fcn_hrnetw18_small_v1_humanseg_192x192_mini_supervisely/best_model/model.pdparams \
+--image_path data/human_image.jpg
+```
+
+## Model export
+### Export the model as a static graph model
+
+Make sure you are in the PaddleSeg directory and execute the following script:
+
+```shell
+export CUDA_VISIBLE_DEVICES=0 # Set 1 available card
+# Please execute the following command under windows
+# set CUDA_VISIBLE_DEVICES=0
+python ../../export.py \
+--config configs/fcn_hrnetw18_small_v1_humanseg_192x192_mini_supervisely.yml \
+--model_path saved_model/fcn_hrnetw18_small_v1_humanseg_192x192_mini_supervisely/best_model/model.pdparams \
+--save_dir export_model/fcn_hrnetw18_small_v1_humanseg_192x192_mini_supervisely_with_softmax \
+--without_argmax --with_softmax
+```
+
+[Note] when exporting a model, you must use `--without_argmax --with_softmax` parameter.
+
+Export the PP-HumanSeg-Lite model:
+
+```shell
+python ../../export.py \
+--config ../../configs/pp_humanseg_lite/pp_humanseg_lite_export_398x224.yml \
+--save_dir export_model/pp_humanseg_lite_portrait_398x224_with_softmax \
+--model_path pretrained_model/ppseg_lite_portrait_398x224/model.pdparams \
+--without_argmax --with_softmax
+```
+
+### Export parameter
+
+|Parameter name|Purpose|Required option|Default value|
+|-|-|-|-|
+|config|Configuration File|Yes|-|
+|save_dir|Save root path for model and VisualDL log files|no |output|
+|model_path|path to pretrained model parameter|no|specified value in configuration file|
+|with_softmax|Add a softmax operator at the end of the network. Since the PaddleSeg network returns logits by default, if you want to deploy the model to obtain the probability value, you can set it to True|No|False|
+|without_argmax| Whether or not to add the argmax operator at the end of the network. Since the PaddleSeg network returns logits by default, in order to deploy the model, the prediction results can be obtained directly. By default, we add the argmax operator at the end of the network | No | False |
+
+### Result file
+
+```shell
+output
+  ├── deploy.yaml # Deploy related configuration files
+  ├── model.pdiparams # Static graph model parameters
+  ├── model.pdiparams.info # Additional parameter information, generally do not need to pay attention
+  └── model.pdmodel # Static graph model file
+```
+
+## Web deployment
+
+![image](https://user-images.githubusercontent.com/10822846/118273079-127bf480-b4f6-11eb-84c0-8a0bbc7c7433.png)
+
+See [Web deployment tutorial](../../deploy/web)
+
+## Mobile deployment
+
+<img src="../../deploy/lite/example/human_1.png" width="20%" > <img src="../../deploy/lite/example/human_2.png" width ="20%" > <img src="../../deploy/lite/example/human_3.png" width="20%" >
+
+See [Mobile Deployment Tutorial](../../deploy/lite/)
