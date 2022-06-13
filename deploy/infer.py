@@ -166,8 +166,9 @@ class Predictor:
             alpha = np.transpose(result, [1, 2, 0])
 
         mask = alpha * 255
+        mask = (mask[:,:,-1] >= 150) * 255
         img = cv2.cvtColor(img, cv2.COLOR_RGB2RGBA)
-        img[:,:,-1] = mask[:,:,-1]
+        img[:,:,-1] = mask
 
         return img
 
