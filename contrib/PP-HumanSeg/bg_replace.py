@@ -119,7 +119,7 @@ def background_replace(args):
         comb = predictor.run(img, bg)
 
         save_name = osp.basename(args.img_path)
-        save_path = osp.join(args.save_dir, save_name)
+        save_path = osp.join(args.save_dir, save_name.split('.')[0] + '.png')
         cv2.imwrite(save_path, comb)
     # 视频背景替换
     else:
